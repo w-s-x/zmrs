@@ -1,12 +1,12 @@
 # 中免日上 H5 接口逆向 · 阿里云 WAF 签名分析
 
 对中免日上 H5 商城（`h5.cdfsunrise.com`）受**阿里云 WAF JS 挑战**保护的接口
-`POST https://api.cdfsunrise.com/restapi/search/list` 做签名机制逆向，
+`POST https://api.cdfsunrise.com/restapi/search/list` 做签名机制分析，
 用 Python 稳定获取商品列表 / 详情 JSON。
 
 > ⚠️ 仅用于授权范围内的安全研究与 JS 逆向学习，请勿高频请求或商用。
 
-## 原理简述
+## 签名机制
 
 目标接口的 URL 上带一个运行时生成的签名参数 `?md5__1803=<value>`，
 由阿里云 WAF 下发的内联挑战脚本计算。几个关键特性决定了整个方案：
@@ -34,11 +34,17 @@
 
 ## 快速开始
 
-环境要求：Windows + Python 3.13。
+### 环境要求
+
+| 路线 | Python | 需要 |
+| --- | --- | --- |
+| 商品详情 | 3.8+ | `requests` |
+| 路线 B | 3.8+ | `requests`、`playwright` |
+| 路线 A | 3.13 | `requests`、`iv8_rs`（需自行获取 wheel） |
 
 ### 路线 B：浏览器被动收割
 
-依赖：`requests` + `playwright` + 真实安装的 Edge 或 Chrome。
+需要 `requests`、`playwright`。
 
 ```powershell
 pip install playwright requests
@@ -50,8 +56,7 @@ python -X utf8 fetch_detail.py <goodsId>    # 详情页 → detail_capture.json
 
 ### 路线 A：纯协议全链路
 
-依赖：`requests` + **iv8_rs 沙箱**（`ming_iv8_rs`，纯 Python 进程内执行浏览器 JS
-的 V8 运行时，未发布到 PyPI，需自行获取 wheel 后安装）。
+需要 `requests`、`iv8_rs`。
 
 ```powershell
 python -X utf8 final_step3_v3.py            # → final_step3_v3_result.json
